@@ -39,8 +39,6 @@ public class IPLManagement {
     @Column(name = "sponsor")
     private List<String> sponsors;
     
-//    @OneToMany(mappedBy = "iplManagement", cascade = CascadeType.ALL)
-//    @JoinColumn(name = "ipl_management_id")
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "ipl_management_id")
     private List<Match> matches;
