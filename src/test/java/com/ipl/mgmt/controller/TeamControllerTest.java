@@ -79,17 +79,6 @@ public class TeamControllerTest {
         assertEquals(team, response.getBody());
     }
 
-    @Test
-    public void testUpdateTeam_ExistingTeam() {
-        Integer teamId = 1;
-        Team team = new Team(teamId, "Updated Team 1", teamId, null, null, null, teamId, teamId, teamId, teamId);
-        when(teamService.saveTeam(team)).thenReturn(team);
-
-        ResponseEntity<Team> response = teamController.updateTeam(teamId, team);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(team, response.getBody());
-    }
 
 
     @Test

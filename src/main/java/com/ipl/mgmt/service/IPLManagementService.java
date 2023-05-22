@@ -96,6 +96,7 @@ public class IPLManagementService {
      *
      * @param id the ID of the IPL Management
      * @return IPLManagement object
+     * @throws IllegalArgumentException if IPLManagement with the given ID doesn't exist
      */
     public IPLManagement getIPLManagementInfoById(Long id) {
         log.info("Fetching IPL Management information with ID: {}", id);
@@ -121,10 +122,15 @@ public class IPLManagementService {
      * Deletes IPL Management information by ID.
      *
      * @param id the ID of the IPL Management to be deleted
+     * @throws IllegalArgumentException if IPLManagement with the given ID doesn't exist
      */
     public void deleteIPLManagementInfo(Long id) {
         log.info("Deleting IPL Management information with ID: {}", id);
-        iplManagementRepository.deleteById(id);
+        if (iplManagementRepository.existsById(id)) {
+            iplManagementRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("IPL Management with ID " + id + " does not exist");
+        }
     }
 
     

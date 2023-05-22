@@ -74,10 +74,17 @@ public class MatchController {
     @PutMapping("/{matchId}")
     public ResponseEntity<Match> updateMatch(@PathVariable Long matchId, @RequestBody Match match) {
         log.info("Updating match with ID: {}", matchId);
-        match.setMatchId(matchId);
-        Match updatedMatch = matchService.saveMatch(match);
-        return ResponseEntity.ok(updatedMatch);
+        Match existingMatch = matchService.getMatchById(matchId);
+        if (existingMatch != null) {
+            match.setMatchId(matchId);
+            Match updatedMatch = matchService.saveMatch(match);
+            return ResponseEntity.ok(updatedMatch);
+        } else {
+            log.warn("Match not found with ID: {}", matchId);
+            return ResponseEntity.notFound().build();
+        }
     }
+
 
     /**
      * Endpoint to delete a match by its ID.
@@ -88,7 +95,12 @@ public class MatchController {
     @DeleteMapping("/{matchId}")
     public ResponseEntity<Void> deleteMatch(@PathVariable Long matchId) {
         log.info("Deleting match with ID: {}", matchId);
+        try {
         matchService.deleteMatch(matchId);
         return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            log.warn("Failed to delete match with ID: {}", matchId, e);
+            return ResponseEntity.notFound().build();
+        }
     }
 }

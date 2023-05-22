@@ -20,7 +20,6 @@ import java.util.List;
 @RequestMapping("/v1/teams")
 public class TeamController {
 
-	
     @Autowired
     private TeamService teamService;
 
@@ -36,7 +35,6 @@ public class TeamController {
         return ResponseEntity.ok(teams);
     }
 
-    
     /**
      * Endpoint to retrieve a team by its ID.
      *
@@ -55,7 +53,6 @@ public class TeamController {
         }
     }
 
-    
     /**
      * Endpoint to create a new team.
      *
@@ -68,7 +65,6 @@ public class TeamController {
         Team createdTeam = teamService.saveTeam(team);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTeam);
     }
-    
 
     /**
      * Endpoint to update a team by its ID.
@@ -80,21 +76,32 @@ public class TeamController {
     @PutMapping("/{id}")
     public ResponseEntity<Team> updateTeam(@PathVariable("id") Integer teamId, @RequestBody Team team) {
         log.info("Updating team with ID: {}", teamId);
-        team.setTeamId(teamId);
-        Team updatedTeam = teamService.saveTeam(team);
-        return ResponseEntity.ok(updatedTeam);
+        Team existingTeam = teamService.getTeamById(teamId);
+        if (existingTeam != null) {
+            team.setTeamId(teamId);
+            Team updatedTeam = teamService.saveTeam(team);
+            return ResponseEntity.ok(updatedTeam);
+        } else {
+            log.warn("Team not found with ID: {}", teamId);
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    
     /**
      * Endpoint to delete a team by its ID.
      *
      * @param teamId the ID of the team to be deleted
+     * @return ResponseEntity with no content
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTeam(@PathVariable("id") Integer teamId) {
         log.info("Deleting team with ID: {}", teamId);
-        teamService.deleteTeam(teamId);
-        return ResponseEntity.noContent().build();
+        try {
+            teamService.deleteTeam(teamId);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            log.warn("Failed to delete team with ID: {}", teamId, e);
+            return ResponseEntity.notFound().build();
+        }
     }
 }

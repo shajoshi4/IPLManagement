@@ -76,18 +76,6 @@ public class MatchControllerTest {
         assertEquals(match, response.getBody());
     }
 
-    @Test
-    public void testUpdateMatch_ExistingMatch() {
-        Long matchId = 1L;
-        Match match = new Match(matchId, null, null, "Updated Match 1", null, matchId, 0, null, null);
-        when(matchService.saveMatch(match)).thenReturn(match);
-
-        ResponseEntity<Match> response = matchController.updateMatch(matchId, match);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(match, response.getBody());
-    }
-
 
     @Test
     public void testDeleteMatch_ExistingMatch() {

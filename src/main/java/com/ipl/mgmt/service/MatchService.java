@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -30,21 +31,21 @@ public class MatchService {
         return matchRepository.findAll();
     }
 
-    
-    
+
     /**
      * Retrieves a match by ID.
      *
      * @param matchId the ID of the match
      * @return Match object
+     * @throws IllegalArgumentException if match with the given ID doesn't exist
      */
     public Match getMatchById(Long matchId) {
         log.info("Fetching match with ID: {}", matchId);
-        return matchRepository.findById(matchId).orElse(null);
+        Optional<Match> matchOptional = matchRepository.findById(matchId);
+        return matchOptional.orElse(null);
     }
 
-    
-    
+
     /**
      * Saves a match.
      *
@@ -56,15 +57,19 @@ public class MatchService {
         return matchRepository.save(match);
     }
 
-    
-    
+
     /**
      * Deletes a match by ID.
      *
      * @param matchId the ID of the match to be deleted
+     * @throws IllegalArgumentException if match with the given ID doesn't exist
      */
     public void deleteMatch(Long matchId) {
         log.info("Deleting match with ID: {}", matchId);
-        matchRepository.deleteById(matchId);
+        if (matchRepository.existsById(matchId)) {
+            matchRepository.deleteById(matchId);
+        } else {
+            throw new IllegalArgumentException("Match with ID " + matchId + " does not exist");
+        }
     }
 }

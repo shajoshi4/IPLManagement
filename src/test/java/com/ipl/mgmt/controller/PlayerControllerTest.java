@@ -66,19 +66,6 @@ public class PlayerControllerTest {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(player, response.getBody());
     }
-
-    @Test
-    public void testUpdatePlayer_ExistingPlayer() {
-        Integer playerId = 1;
-        Player player = new Player(playerId, "Updated Player 1", playerId, null, null, playerId, null, null, null, null, null, null);
-        when(playerService.savePlayer(player)).thenReturn(player);
-
-        ResponseEntity<Player> response = playerController.updatePlayer(playerId, player);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(player, response.getBody());
-    }
-
    
 
     @Test

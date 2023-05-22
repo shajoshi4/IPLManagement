@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -20,7 +21,6 @@ public class PlayerService {
     @Autowired
     private PlayerRepository playerRepository;
 
-    
     /**
      * Retrieves all players.
      *
@@ -31,8 +31,6 @@ public class PlayerService {
         return playerRepository.findAll();
     }
 
-    
-    
     /**
      * Retrieves a player by ID.
      *
@@ -41,11 +39,10 @@ public class PlayerService {
      */
     public Player getPlayerById(Integer playerId) {
         log.info("Fetching player with ID: {}", playerId);
-        return playerRepository.findById(playerId).orElse(null);
+        Optional<Player> player = playerRepository.findById(playerId);
+        return player.orElse(null);
     }
 
-    
-    
     /**
      * Saves a player.
      *
@@ -57,15 +54,18 @@ public class PlayerService {
         return playerRepository.save(player);
     }
 
-    
-    
     /**
      * Deletes a player by ID.
      *
      * @param playerId the ID of the player to be deleted
+     * @throws IllegalArgumentException if the player with the given ID doesn't exist
      */
     public void deletePlayer(Integer playerId) {
         log.info("Deleting player with ID: {}", playerId);
-        playerRepository.deleteById(playerId);
+        if (playerRepository.existsById(playerId)) {
+            playerRepository.deleteById(playerId);
+        } else {
+            throw new IllegalArgumentException("Player not found with ID: " + playerId);
+        }
     }
 }

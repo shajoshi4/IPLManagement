@@ -74,9 +74,15 @@ public class PlayerController {
     @PutMapping("/{id}")
     public ResponseEntity<Player> updatePlayer(@PathVariable("id") Integer playerId, @RequestBody Player player) {
         log.info("Updating player with ID: {}", playerId);
-        player.setPlayerId(playerId);
-        Player updatedPlayer = playerService.savePlayer(player);
-        return ResponseEntity.ok(updatedPlayer);
+        Player existingPlayer = playerService.getPlayerById(playerId);
+        if (existingPlayer != null) {
+            player.setPlayerId(playerId);
+            Player updatedPlayer = playerService.savePlayer(player);
+            return ResponseEntity.ok(updatedPlayer);
+        } else {
+            log.warn("Player not found with ID: {}", playerId);
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
@@ -88,7 +94,12 @@ public class PlayerController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePlayer(@PathVariable("id") Integer playerId) {
         log.info("Deleting player with ID: {}", playerId);
+        try {
         playerService.deletePlayer(playerId);
         return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            log.warn("Failed to delete player with ID: {}", playerId, e);
+            return ResponseEntity.notFound().build();
+        }
     }
 }

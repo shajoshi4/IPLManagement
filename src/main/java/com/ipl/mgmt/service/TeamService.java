@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-
+import java.util.Optional;
 
 /**
  * The TeamService class provides operations to manage Team information.
@@ -31,21 +30,18 @@ public class TeamService {
         return teamRepository.findAll();
     }
 
-    
-    
     /**
      * Retrieves a team by ID.
      *
      * @param teamId the ID of the team
-     * @return Team object
+     * @return Team object if found, null otherwise
      */
     public Team getTeamById(Integer teamId) {
         log.info("Fetching team by ID: {}", teamId);
-        return teamRepository.findById(teamId).orElse(null);
+        Optional<Team> teamOptional = teamRepository.findById(teamId);
+        return teamOptional.orElse(null);
     }
 
-    
-    
     /**
      * Saves a team.
      *
@@ -57,15 +53,18 @@ public class TeamService {
         return teamRepository.save(team);
     }
 
-    
-    
     /**
      * Deletes a team by ID.
      *
      * @param teamId the ID of the team to be deleted
+     * @throws IllegalArgumentException if team with the given ID doesn't exist
      */
     public void deleteTeam(Integer teamId) {
         log.info("Deleting team by ID: {}", teamId);
-        teamRepository.deleteById(teamId);
+        if (teamRepository.existsById(teamId)) {
+            teamRepository.deleteById(teamId);
+        } else {
+            throw new IllegalArgumentException("Team with ID " + teamId + " does not exist");
+        }
     }
 }
